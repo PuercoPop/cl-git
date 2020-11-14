@@ -135,3 +135,13 @@
   (alexandria:mappend 'cdr (component :parents commit)))
 (defun git:commit-parents (commit)
   (git::parents commit))
+
+;;; XXX: Should we use fset to return a set of results?
+(defun git:rev-list (ref-id)
+  (labels ((iterate (queue accum)
+             (if (null queue)
+                 accum
+                 (iterate (append (cdr queue)
+                                  (git::parents (ensure-ref (car queue))))
+                   (cons ref-id accum)))))
+    (iterate (list ref-id) ())))
